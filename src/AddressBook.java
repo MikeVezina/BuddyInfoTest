@@ -26,6 +26,9 @@ public class AddressBook {
 	
 	public static void main(String[] args)
 	{
-		System.out.println("Address Book Test!");
+		AddressBook addressBook = new AddressBook();
+		BuddyInfo buddyInfo = new BuddyInfo("Test Buddy", "Test Address", "Test Phone");
+		addressBook.addBuddy(buddyInfo);
+		addressBook.removeBuddy(buddyInfo);
 	}
 }
