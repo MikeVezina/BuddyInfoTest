@@ -24,6 +24,11 @@ public class AddressBook {
 		this.buddyInfoList.remove(buddyInfo);
 	}
 	
+	private void thisIsANewMethodForThisBranch()
+	{
+		System.out.println("Hello new branch!");
+	}
+	
 	public static void main(String[] args)
 	{
 		// This is a test for the GitHub editor
@@ -31,5 +36,7 @@ public class AddressBook {
 		BuddyInfo buddyInfo = new BuddyInfo("Test Buddy", "Test Address", "Test Phone");
 		addressBook.addBuddy(buddyInfo);
 		addressBook.removeBuddy(buddyInfo);
+		
+		addressBook.thisIsANewMethodForThisBranch();
 	}
 }
