@@ -36,10 +36,24 @@ public class BuddyInfo {
 		this.phoneNumber = phoneNumber;
 	}
 
-	public static void main(String[] args) {
-		BuddyInfo buddyInfo = new BuddyInfo("Michael", "Address", "Phone");
-		buddyInfo.setName("Michael V");
-		System.out.println("Hello " + buddyInfo.getName());
+	@Override
+	public boolean equals(Object other)
+	{
+		if(this == other)
+			return true;
+
+		if(!(other instanceof BuddyInfo))
+			return false;
+
+		BuddyInfo otherBuddy = (BuddyInfo) other;
+
+		return this.name.equals(otherBuddy.name) && this.address.equals(otherBuddy.address) && this.phoneNumber.equals(otherBuddy.phoneNumber);
+	}
+
+	@Override
+	public String toString()
+	{
+		return "[Name: " + name + ", Phone: " + phoneNumber + ", Address: " + address + "]";
 	}
 
 }
