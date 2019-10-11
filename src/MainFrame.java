@@ -1,8 +1,10 @@
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-public class MainFrame extends JFrame {
+public class MainFrame extends JFrame implements ListSelectionListener {
 
     private JMenuBar menuBar;
 
@@ -10,11 +12,12 @@ public class MainFrame extends JFrame {
     private JMenu addressBookMenu;
     private JMenuItem createAddressBookMenuItem;
     private JMenuItem saveAddressBookMenuItem;
-    private JMenuItem displayAddressBookMenuItem;
 
     // BuddyInfo JMenu and Corresponding Items
     private JMenu buddyInfoMenu;
     private JMenuItem createBuddyInfoMenuItem;
+    private JMenuItem editBuddyInfoMenuItem;
+    private JMenuItem removeBuddyInfoMenuItem;
     private JList currentBuddyInfoList;
 
     private AddressBook currentAddressBook;
@@ -35,7 +38,7 @@ public class MainFrame extends JFrame {
 
     private void initializeComponents() {
         currentBuddyInfoList = new JList();
-
+        
         // Create the menu bar
         menuBar = new JMenuBar();
         menuBar.setMaximumSize(new Dimension(this.getPreferredSize().width, 20));
@@ -43,24 +46,27 @@ public class MainFrame extends JFrame {
         addressBookMenu = new JMenu("Address Book");
         createAddressBookMenuItem = new JMenuItem("Create");
         saveAddressBookMenuItem = new JMenuItem("Save");
-        displayAddressBookMenuItem = new JMenuItem("Display");
 
         buddyInfoMenu = new JMenu("Buddy Info");
         createBuddyInfoMenuItem = new JMenuItem("Create");
+        editBuddyInfoMenuItem = new JMenuItem("Edit Selected Buddy");
+        removeBuddyInfoMenuItem = new JMenuItem("Remove Selected Buddy");
 
         // Add any necessary action handlers
         createAddressBookMenuItem.addActionListener(this::createAddressBook);
         saveAddressBookMenuItem.addActionListener(this::saveAddressBook);
-        displayAddressBookMenuItem.addActionListener(this::displayAddressBook);
         createBuddyInfoMenuItem.addActionListener(this::createBuddyInfo);
+        editBuddyInfoMenuItem.addActionListener(this::editBuddyInfo);
+        removeBuddyInfoMenuItem.addActionListener(this::removeBuddyInfo);
 
         // Add address book menu items
         addressBookMenu.add(createAddressBookMenuItem);
         addressBookMenu.add(saveAddressBookMenuItem);
-        addressBookMenu.add(displayAddressBookMenuItem);
 
         // Add buddy info menu items
         buddyInfoMenu.add(createBuddyInfoMenuItem);
+        buddyInfoMenu.add(editBuddyInfoMenuItem);
+        buddyInfoMenu.add(removeBuddyInfoMenuItem);
 
         // Add menus to the menu bar
         menuBar.add(addressBookMenu);
@@ -68,8 +74,14 @@ public class MainFrame extends JFrame {
 
         // Disable some of the menu items
         saveAddressBookMenuItem.setEnabled(false);
-        displayAddressBookMenuItem.setEnabled(false);
         createBuddyInfoMenuItem.setEnabled(false);
+        editBuddyInfoMenuItem.setEnabled(false);
+        removeBuddyInfoMenuItem.setEnabled(false);
+
+        currentBuddyInfoList.addListSelectionListener(this);
+
+        // Only one item should be able to be selected at a time.
+        currentBuddyInfoList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         this.getContentPane().add(menuBar);
         this.getContentPane().add(currentBuddyInfoList);
@@ -77,16 +89,70 @@ public class MainFrame extends JFrame {
     }
 
     /**
-     * Requests input from JOptionPane.showInputDialog(message) until input is cancelled or not empty.
+     * Removes the selected buddy info object.
+     *
+     * @param actionEvent Unused.
+     */
+    private void removeBuddyInfo(ActionEvent actionEvent) {
+        int selectedBuddyIndex = currentBuddyInfoList.getSelectedIndex();
+        currentAddressBook.remove(selectedBuddyIndex);
+    }
+
+    /**
+     * Utilizes the Dialogs to edit the existing buddy info
+     *
+     * @param actionEvent Unused.
+     */
+    private void editBuddyInfo(ActionEvent actionEvent) {
+        int selectedBuddyIndex = currentBuddyInfoList.getSelectedIndex();
+        BuddyInfo selectedBuddy = currentAddressBook.get(selectedBuddyIndex);
+
+        BuddyInfo modifiedBuddy = requestBuddyInfoDialog(selectedBuddy.getName(), selectedBuddy.getPhoneNumber(), selectedBuddy.getAddress());
+
+        if (modifiedBuddy == null)
+            return;
+
+        selectedBuddy.setName(modifiedBuddy.getName());
+        selectedBuddy.setAddress(modifiedBuddy.getAddress());
+        selectedBuddy.setPhoneNumber(modifiedBuddy.getPhoneNumber());
+    }
+
+    /**
+     * Requests Buddy Information dialogs (Name / Address / Phone Number), using any default dialog inputs and returns
+     * a buddy info object containing the obtained inputs or null if input is cancelled.
+     */
+    private BuddyInfo requestBuddyInfoDialog(String initialName, String initialPhone, String initialAddress) {
+
+        String buddyNameInput = requestNonEmptyInput("Buddy Name: ", initialName);
+
+        if (buddyNameInput == null)
+            return null;
+
+        String buddyAddressInput = requestNonEmptyInput("Please enter the buddy address: ", initialAddress);
+
+        if (buddyAddressInput == null)
+            return null;
+
+        String buddyPhoneInput = requestNonEmptyInput("Please enter the buddy phone number: ", initialPhone);
+
+        if (buddyPhoneInput == null)
+            return null;
+
+        return new BuddyInfo(buddyNameInput, buddyAddressInput, buddyPhoneInput);
+    }
+
+    /**
+     * Requests input from JOptionPane.showInputDialog(message) until input is cancelled or not empty. Initializes
+     * the input dialog with the defaultText
      *
      * @return The non-empty input, or Null if the user cancelled input
      */
-    private String requestNonEmptyInput(String message) {
+    private String requestNonEmptyInput(String message, String defaultText) {
         String response = "";
 
         // Null Response values should break the loop, since they result from the user clicking cancel
         while (response != null && response.isEmpty())
-            response = JOptionPane.showInputDialog(message);
+            response = JOptionPane.showInputDialog(message, defaultText);
 
         return response;
     }
@@ -98,33 +164,13 @@ public class MainFrame extends JFrame {
      */
     private void createBuddyInfo(ActionEvent actionEvent) {
 
-        String buddyNameInput = requestNonEmptyInput("Please enter the buddy name: ");
-
-        if (buddyNameInput == null)
-            return;
-
-        String buddyAddressInput = requestNonEmptyInput("Please enter the buddy address: ");
-
-        if (buddyAddressInput == null)
-            return;
-
-        String buddyPhoneInput = requestNonEmptyInput("Please enter the buddy phone number: ");
-
-        if (buddyPhoneInput == null)
-            return;
-
-        BuddyInfo buddyInfo = new BuddyInfo(buddyNameInput, buddyAddressInput, buddyPhoneInput);
-        currentAddressBook.addBuddy(buddyInfo);
+        BuddyInfo inputBuddy = requestBuddyInfoDialog();
+        if (inputBuddy != null)
+            currentAddressBook.addBuddy(inputBuddy);
     }
 
-
-    /**
-     * Displays the address book
-     *
-     * @param actionEvent Not used.
-     */
-    private void displayAddressBook(ActionEvent actionEvent) {
-        JOptionPane.showMessageDialog(this, "No need to manually invoke displaying of contents. Contents are automatically updated with listeners :)");
+    private BuddyInfo requestBuddyInfoDialog() {
+        return requestBuddyInfoDialog("", "", "");
     }
 
     /**
@@ -153,7 +199,6 @@ public class MainFrame extends JFrame {
         currentBuddyInfoList.setModel(currentAddressBook);
 
         saveAddressBookMenuItem.setEnabled(true);
-        displayAddressBookMenuItem.setEnabled(true);
         createBuddyInfoMenuItem.setEnabled(true);
     }
 
@@ -162,4 +207,22 @@ public class MainFrame extends JFrame {
         new MainFrame();
     }
 
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+        // Only process this event once.
+        if (e.getValueIsAdjusting())
+            return;
+
+        int selectedIndex = currentBuddyInfoList.getSelectedIndex();
+
+        // If a buddy info gets removed (or de-selected), we should disable the edit/remove buttons.
+        if (selectedIndex == -1) {
+            editBuddyInfoMenuItem.setEnabled(false);
+            removeBuddyInfoMenuItem.setEnabled(false);
+        } else {
+            editBuddyInfoMenuItem.setEnabled(true);
+            removeBuddyInfoMenuItem.setEnabled(true);
+        }
+
+    }
 }
