@@ -1,17 +1,50 @@
 
 public class BuddyInfo {
 
+	protected static final String GREETING_PREFIX = "Hello from ";
 	private String name;
 	private String address;
 	private String phoneNumber;
+	private int age;
 	
-	public BuddyInfo(String name, String address, String phoneNumber)
+	public BuddyInfo(String name, int age, String address, String phoneNumber)
 	{
 		this.name = name;
+		this.age = age;
 		this.address = address;
 		this.phoneNumber = phoneNumber;
 	}
-	
+
+	public BuddyInfo(BuddyInfo buddyInfo)
+	{
+		if(buddyInfo == null)
+			throw new NullPointerException("buddyInfo can not be null");
+
+		this.name = buddyInfo.name;
+		this.age = buddyInfo.age;
+		this.address = buddyInfo.address;
+		this.phoneNumber = buddyInfo.phoneNumber;
+	}
+
+	public String getGreeting()
+	{
+		return GREETING_PREFIX + getName();
+	}
+
+
+	public int getAge() {
+		return age;
+	}
+
+	public boolean isOver18()
+	{
+		return age > 18;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -47,7 +80,7 @@ public class BuddyInfo {
 
 		BuddyInfo otherBuddy = (BuddyInfo) other;
 
-		return this.name.equals(otherBuddy.name) && this.address.equals(otherBuddy.address) && this.phoneNumber.equals(otherBuddy.phoneNumber);
+		return this.name.equals(otherBuddy.name) && this.age == otherBuddy.age && this.address.equals(otherBuddy.address) && this.phoneNumber.equals(otherBuddy.phoneNumber);
 	}
 
 	@Override

@@ -138,7 +138,7 @@ public class MainFrame extends JFrame implements ListSelectionListener {
         if (buddyPhoneInput == null)
             return null;
 
-        return new BuddyInfo(buddyNameInput, buddyAddressInput, buddyPhoneInput);
+        return new BuddyInfo(buddyNameInput, 18, buddyAddressInput, buddyPhoneInput);
     }
 
     /**
