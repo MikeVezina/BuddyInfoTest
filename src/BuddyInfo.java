@@ -4,7 +4,8 @@ public class BuddyInfo {
 
     protected static final String GREETING_PREFIX = "Hello from ";
 
-    private static final String DELIM = "%";
+    private static final String DELIM = "$";
+    private static final String ESCAPED_DELIM = "\\" + DELIM;
     private static final int NAME_IDX = 0;
     private static final int AGE_IDX = 1;
     private static final int ADDRESS_IDX = 2;
@@ -91,13 +92,8 @@ public class BuddyInfo {
         if (buddyString == null || buddyString.isEmpty())
             throw new NullPointerException("Failed to import buddy. Invalid string: " + buddyString);
 
-        String[] splitBuddyString = buddyString.split(DELIM);
-
-        if (splitBuddyString.length != PARSED_NUM_FIELDS)
-            throw new NullPointerException("Failed to import buddy. Missing buddy information. " + buddyString);
-
         Scanner s = new Scanner(buddyString);
-        s.useDelimiter(DELIM);
+        s.useDelimiter(ESCAPED_DELIM);
 
         // Parse the buddy information
         String name = s.next();
