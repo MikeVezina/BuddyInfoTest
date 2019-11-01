@@ -12,6 +12,7 @@ public class MainFrame extends JFrame implements ListSelectionListener {
     private JMenu addressBookMenu;
     private JMenuItem createAddressBookMenuItem;
     private JMenuItem saveAddressBookMenuItem;
+    private JMenuItem importAddressBookMenuItem;
 
     // BuddyInfo JMenu and Corresponding Items
     private JMenu buddyInfoMenu;
@@ -38,7 +39,7 @@ public class MainFrame extends JFrame implements ListSelectionListener {
 
     private void initializeComponents() {
         currentBuddyInfoList = new JList();
-        
+
         // Create the menu bar
         menuBar = new JMenuBar();
         menuBar.setMaximumSize(new Dimension(this.getPreferredSize().width, 20));
@@ -46,6 +47,7 @@ public class MainFrame extends JFrame implements ListSelectionListener {
         addressBookMenu = new JMenu("Address Book");
         createAddressBookMenuItem = new JMenuItem("Create");
         saveAddressBookMenuItem = new JMenuItem("Save");
+        importAddressBookMenuItem = new JMenuItem("Import");
 
         buddyInfoMenu = new JMenu("Buddy Info");
         createBuddyInfoMenuItem = new JMenuItem("Create");
@@ -55,6 +57,7 @@ public class MainFrame extends JFrame implements ListSelectionListener {
         // Add any necessary action handlers
         createAddressBookMenuItem.addActionListener(this::createAddressBook);
         saveAddressBookMenuItem.addActionListener(this::saveAddressBook);
+        importAddressBookMenuItem.addActionListener(this::importAddressBook);
         createBuddyInfoMenuItem.addActionListener(this::createBuddyInfo);
         editBuddyInfoMenuItem.addActionListener(this::editBuddyInfo);
         removeBuddyInfoMenuItem.addActionListener(this::removeBuddyInfo);
@@ -62,6 +65,7 @@ public class MainFrame extends JFrame implements ListSelectionListener {
         // Add address book menu items
         addressBookMenu.add(createAddressBookMenuItem);
         addressBookMenu.add(saveAddressBookMenuItem);
+        addressBookMenu.add(importAddressBookMenuItem);
 
         // Add buddy info menu items
         buddyInfoMenu.add(createBuddyInfoMenuItem);
@@ -86,6 +90,18 @@ public class MainFrame extends JFrame implements ListSelectionListener {
         this.getContentPane().add(menuBar);
         this.getContentPane().add(currentBuddyInfoList);
 
+    }
+
+    private void setCurrentAddressBook(AddressBook addressBook) {
+        this.currentAddressBook = addressBook;
+        currentBuddyInfoList.setModel(currentAddressBook);
+
+        saveAddressBookMenuItem.setEnabled(true);
+        createBuddyInfoMenuItem.setEnabled(true);
+    }
+
+    private void importAddressBook(ActionEvent actionEvent) {
+        setCurrentAddressBook(AddressBook.importAddressBook());
     }
 
     /**
@@ -183,10 +199,8 @@ public class MainFrame extends JFrame implements ListSelectionListener {
             return;
 
         // Save the address book to file
-        if (currentAddressBook.saveToFile())
-            JOptionPane.showMessageDialog(this, "The Address Book has been saved to file: " + AddressBook.ADDRESS_BOOK_OUTPUT_FILE);
-        else
-            JOptionPane.showMessageDialog(this, "Failed to save address book to file: " + AddressBook.ADDRESS_BOOK_OUTPUT_FILE);
+        currentAddressBook.export();
+        JOptionPane.showMessageDialog(this, "The Address Book has been saved to file: " + AddressBook.ADDRESS_BOOK_OUTPUT_FILE);
     }
 
     /**
@@ -195,11 +209,7 @@ public class MainFrame extends JFrame implements ListSelectionListener {
      * @param actionEvent Not used.
      */
     private void createAddressBook(ActionEvent actionEvent) {
-        currentAddressBook = new AddressBook();
-        currentBuddyInfoList.setModel(currentAddressBook);
-
-        saveAddressBookMenuItem.setEnabled(true);
-        createBuddyInfoMenuItem.setEnabled(true);
+        setCurrentAddressBook(new AddressBook());
     }
 
 

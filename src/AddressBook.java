@@ -1,7 +1,6 @@
 import javax.swing.*;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.Enumeration;
 
 public class AddressBook extends DefaultListModel<BuddyInfo> {
     public static final String ADDRESS_BOOK_OUTPUT_FILE = "Address_Book.txt";
@@ -42,21 +41,45 @@ public class AddressBook extends DefaultListModel<BuddyInfo> {
 
     /**
      * Saves the address book contents to a pre-defined file name.
-     *
-     * @return True if the file was saved successfully, false otherwise.
      */
-    public boolean saveToFile() {
+    public void export()
+    {
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(ADDRESS_BOOK_OUTPUT_FILE));
-            out.write(this.toString());
+            Enumeration<BuddyInfo> buddyEnum = super.elements();
+
+            while(buddyEnum.hasMoreElements())
+            {
+                BuddyInfo next = buddyEnum.nextElement();
+                out.write(next.toString());
+                out.write("\n");
+            }
+
             out.close();
 
-            return true;
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
-        return false;
+
+    public static AddressBook importAddressBook()
+    {
+        AddressBook addressBook = new AddressBook();
+
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(ADDRESS_BOOK_OUTPUT_FILE));
+
+            // Map each line to a BuddyInfo object and add it to the address book
+            in.lines().map(BuddyInfo::importBuddy).forEach(addressBook::addBuddy);
+
+            in.close();
+
+            return addressBook;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
