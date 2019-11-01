@@ -101,6 +101,8 @@ public class BuddyInfo {
         String address = s.next();
         String phone = s.next();
 
+        s.close();
+
         return new BuddyInfo(name, age, address, phone);
     }
 
