@@ -20,6 +20,20 @@ public class BuddyInfoTest {
     }
 
     @Test
+    public void testToXML()
+    {
+        String xmlString = testBuddyInfo.toXML();
+        assertTrue("Must contain BuddyInfo tag", xmlString.contains("<" + BuddyInfo.BUDDY_TAG + ">" ));
+        assertTrue("Must contain BuddyInfo closing tag", xmlString.contains("</" + BuddyInfo.BUDDY_TAG + ">" ));
+
+        assertTrue("Must contain name tag", xmlString.contains("<" + BuddyInfo.NAME_TAG + ">" + testBuddyInfo.getName() + "</" + BuddyInfo.NAME_TAG + ">"));
+        assertTrue("Must contain address tag", xmlString.contains("<" + BuddyInfo.ADDRESS_TAG + ">" + testBuddyInfo.getAddress() + "</" + BuddyInfo.ADDRESS_TAG + ">"));
+        assertTrue("Must contain phone tag", xmlString.contains("<" + BuddyInfo.PHONE_TAG + ">" + testBuddyInfo.getPhoneNumber() + "</" + BuddyInfo.PHONE_TAG + ">"));
+        assertTrue("Must contain age tag", xmlString.contains("<" + BuddyInfo.AGE_TAG + ">" + testBuddyInfo.getAge() + "</" + BuddyInfo.AGE_TAG + ">"));
+
+    }
+
+    @Test
     public void testCopyConstructor() {
         BuddyInfo copyBuddy = new BuddyInfo(testBuddyInfo);
         assertEquals(copyBuddy, testBuddyInfo);

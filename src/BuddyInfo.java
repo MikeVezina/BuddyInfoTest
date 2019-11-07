@@ -13,6 +13,12 @@ public class BuddyInfo implements Serializable {
     private static final int PHONE_IDX = 3;
     private static final int PARSED_NUM_FIELDS = 4;
 
+    public static final String BUDDY_TAG = "buddy";
+    public static final String NAME_TAG = "name";
+    public static final String AGE_TAG = "age";
+    public static final String ADDRESS_TAG = "address";
+    public static final String PHONE_TAG = "phone";
+
     private String name;
     private String address;
     private String phoneNumber;
@@ -27,7 +33,7 @@ public class BuddyInfo implements Serializable {
 
     public BuddyInfo(BuddyInfo buddyInfo) {
         if (buddyInfo == null)
-            throw new NullPointerException("buddyInfo can not be null");
+            throw new NullPointerException(BUDDY_TAG + "Info can not be null");
 
         this.name = buddyInfo.name;
         this.age = buddyInfo.age;
@@ -87,6 +93,30 @@ public class BuddyInfo implements Serializable {
         BuddyInfo otherBuddy = (BuddyInfo) other;
 
         return this.name.equals(otherBuddy.name) && this.age == otherBuddy.age && this.address.equals(otherBuddy.address) && this.phoneNumber.equals(otherBuddy.phoneNumber);
+    }
+
+    private String createXMLSimpleElement(String tagName, String value)
+    {
+        StringBuilder xmlBuilder = new StringBuilder();
+        xmlBuilder.append("<").append(tagName).append(">");
+        xmlBuilder.append(value);
+        xmlBuilder.append("</").append(tagName).append(">");
+        return xmlBuilder.toString();
+    }
+
+    public String toXML()
+    {
+        StringBuilder xmlBuilder = new StringBuilder();
+        xmlBuilder.append("<" + BUDDY_TAG + ">");
+
+        xmlBuilder.append(createXMLSimpleElement(NAME_TAG, name));
+        xmlBuilder.append(createXMLSimpleElement(AGE_TAG, String.valueOf(age)));
+        xmlBuilder.append(createXMLSimpleElement(ADDRESS_TAG, address));
+        xmlBuilder.append(createXMLSimpleElement(PHONE_TAG, phoneNumber));
+
+        xmlBuilder.append("</" + BUDDY_TAG + ">");
+
+        return xmlBuilder.toString();
     }
 
 
