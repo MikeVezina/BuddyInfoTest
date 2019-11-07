@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.io.*;
 import java.util.Enumeration;
 
-public class AddressBook extends DefaultListModel<BuddyInfo> {
+public class AddressBook extends DefaultListModel<BuddyInfo> implements Serializable {
     public static final String ADDRESS_BOOK_OUTPUT_FILE = "Address_Book.txt";
 
     /**
@@ -45,17 +45,10 @@ public class AddressBook extends DefaultListModel<BuddyInfo> {
     public void export()
     {
         try {
-            BufferedWriter out = new BufferedWriter(new FileWriter(ADDRESS_BOOK_OUTPUT_FILE));
-            Enumeration<BuddyInfo> buddyEnum = super.elements();
-
-            while(buddyEnum.hasMoreElements())
-            {
-                BuddyInfo next = buddyEnum.nextElement();
-                out.write(next.toString());
-                out.write("\n");
-            }
-
-            out.close();
+            FileOutputStream fileOutputStream = new FileOutputStream(ADDRESS_BOOK_OUTPUT_FILE);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(this);
+            objectOutputStream.close();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -63,23 +56,33 @@ public class AddressBook extends DefaultListModel<BuddyInfo> {
     }
 
 
-    public static AddressBook importAddressBook()
+    public static AddressBook importAddressBook() throws IOException, ClassNotFoundException {
+        FileInputStream fileInputStream = new FileInputStream(ADDRESS_BOOK_OUTPUT_FILE);
+        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+        return (AddressBook) objectInputStream.readObject();
+    }
+
+    @Override
+    public boolean equals(Object o)
     {
-        AddressBook addressBook = new AddressBook();
+        if(o == this)
+            return true;
 
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(ADDRESS_BOOK_OUTPUT_FILE));
+        if(!(o instanceof AddressBook))
+            return false;
 
-            // Map each line to a BuddyInfo object and add it to the address book
-            in.lines().map(BuddyInfo::importBuddy).forEach(addressBook::addBuddy);
+        AddressBook addressBook = (AddressBook) o;
 
-            in.close();
+        if(this.size() != addressBook.size())
+            return false;
 
-            return addressBook;
-        } catch (IOException e) {
-            e.printStackTrace();
+        for(int i = 0; i < this.size(); i++)
+        {
+            if(!this.get(i).equals(addressBook.get(i)))
+                return false;
         }
-        return null;
+
+        return true;
     }
 
     @Override

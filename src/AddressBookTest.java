@@ -1,7 +1,13 @@
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Scanner;
+
+import static org.junit.Assert.*;
 
 public class AddressBookTest {
 
@@ -32,6 +38,25 @@ public class AddressBookTest {
         assertEquals(oneBuddyAddressBook.size(), 1);
         assertEquals(twoBuddyAddressBook.size(), 2);
     }
+
+    @Test
+    public void testExportAndImport() throws IOException, ClassNotFoundException {
+        // Test Export and Import for each address book
+        emptyAddressBook.export();
+        testImportAddressBook(emptyAddressBook);
+
+        oneBuddyAddressBook.export();
+        testImportAddressBook(oneBuddyAddressBook);
+
+        twoBuddyAddressBook.export();
+        testImportAddressBook(twoBuddyAddressBook);
+    }
+
+    private void testImportAddressBook(AddressBook addressBook) throws IOException, ClassNotFoundException {
+        AddressBook importedBook = AddressBook.importAddressBook();
+        assertEquals(addressBook, importedBook);
+    }
+
 
     @Test
     public void testClear()

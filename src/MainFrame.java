@@ -3,6 +3,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 
 public class MainFrame extends JFrame implements ListSelectionListener {
 
@@ -101,7 +102,11 @@ public class MainFrame extends JFrame implements ListSelectionListener {
     }
 
     private void importAddressBook(ActionEvent actionEvent) {
-        setCurrentAddressBook(AddressBook.importAddressBook());
+        try {
+            setCurrentAddressBook(AddressBook.importAddressBook());
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

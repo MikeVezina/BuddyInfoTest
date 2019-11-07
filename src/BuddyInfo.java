@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.Scanner;
 
-public class BuddyInfo {
+public class BuddyInfo implements Serializable {
 
     protected static final String GREETING_PREFIX = "Hello from ";
 
@@ -88,23 +89,6 @@ public class BuddyInfo {
         return this.name.equals(otherBuddy.name) && this.age == otherBuddy.age && this.address.equals(otherBuddy.address) && this.phoneNumber.equals(otherBuddy.phoneNumber);
     }
 
-    public static BuddyInfo importBuddy(String buddyString) {
-        if (buddyString == null || buddyString.isEmpty())
-            throw new NullPointerException("Failed to import buddy. Invalid string: " + buddyString);
-
-        Scanner s = new Scanner(buddyString);
-        s.useDelimiter(ESCAPED_DELIM);
-
-        // Parse the buddy information
-        String name = s.next();
-        int age = s.nextInt();
-        String address = s.next();
-        String phone = s.next();
-
-        s.close();
-
-        return new BuddyInfo(name, age, address, phone);
-    }
 
     @Override
     public String toString() {
