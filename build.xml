@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<project name="Hello" default="print message">
+    <target name="print message">
+        <echo message="Hello from Ant!"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${basedir}/build/classes"/>
+        <javac destdir="${basedir}/build/classes">
+            <src path="src"/>
+            <exclude name="*Test.java"/>
+        </javac>
+    </target>
+
+    <target name="packaging" depends="compile">
+        <jar destfile = "${basedir}/lib/output.jar"
+             basedir = "${basedir}/build/classes"
+             includes = "**" >
+            <manifest>
+                <attribute name="Main-Class" value="MainFrame"/>
+            </manifest>
+        </jar>
+    </target>
+
+
+    <target name="run-jar" depends="packaging">
+        <java jar="${basedir}/lib/output.jar" fork="true"/>
+    </target>
+</project>
